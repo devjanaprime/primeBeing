@@ -6,15 +6,15 @@
     <script src="vendors/angular.min.js" charset="utf-8"></script>
     <script src="scripts/primeMan.js" charset="utf-8"></script>
   </head>
-  <body ng-app='myApp' ng-controller='primeManController' ng-keydown="key($event)">
-    <div id='menuDiv' ng-show='menuMode'>
+  <body ng-app='myApp' ng-controller='primeBeingController as primeBeingCtrl' ng-keydown="key($event)">
+    <div id='menuDiv' ng-show='primeBeingCtrl.menuMode'>
       <h1>Prime Being</h1>
       <p>
         Description and stuuuuuuuuuuffffffffff....
       </p>
-      <button ng-click='getGrid();'>Let me play it!</button>
+      <button ng-click='primeBeingCtrl.getGrid();'>Let me play it!</button>
     </div>
-    <div id='playDiv' ng-hide='menuMode'>
+    <div id='playDiv' ng-hide='primeBeingCtrl.menuMode'>
       <canvas id="myCanvas" width="560" height="560" style="border:1px solid #000000;">
       </canvas>
       <div>

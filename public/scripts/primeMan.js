@@ -7,15 +7,17 @@ var RIGHT = 1;
 var DOWN = 2;
 var LEFT = 3;
 
-myApp.controller( 'primeManController', [ '$scope', '$http', function( $scope, $http ){
+myApp.controller( 'primeBeingController', [ '$scope', '$http', function( $scope, $http ){
+  var vm = this;
+
   var canvas = {
     size: 560 // px
   }; //end canvas
 
   // the grid
-  $scope.grid = [];
+  vm.grid = [];
   // pellets
-  $scope.pellets = [];
+  vm.pellets = [];
 
   // player
   var player = {
@@ -37,10 +39,10 @@ myApp.controller( 'primeManController', [ '$scope', '$http', function( $scope, $
   // verbose?
   var verbose = false;
 
-  $scope.coreLoop = function(){
-    $scope.drawBoard();
-    $scope.updatePlayerPosition();
-    $scope.drawPlayer();
+  vm.coreLoop = function(){
+    vm.drawBoard();
+    vm.updatePlayerPosition();
+    vm.drawPlayer();
     // animate player
     player.animFrame++;
     if( player.animFrame > player.animThreshold ){
@@ -48,23 +50,23 @@ myApp.controller( 'primeManController', [ '$scope', '$http', function( $scope, $
       player.animFrame = 0;
     }
     // schedule coreLoop
-    if( !$scope.menuMode ) setTimeout( $scope.coreLoop, 50 );
+    if( !vm.menuMode ) setTimeout( vm.coreLoop, 50 );
   }; //end coreLoop
 
-  $scope.drawBoard = function(){
+  vm.drawBoard = function(){
     var c = document.getElementById( "myCanvas" );
     var ctx = c.getContext( "2d" );
     // clear canvas
     ctx.clearRect(0, 0, c.width, c.height);
     var left = 0;
-    for (var i = 0; i < $scope.grid.length; i++) {
-      for (var j = 0; j < $scope.grid[i].length; j++) {
+    for (var i = 0; i < vm.grid.length; i++) {
+      for (var j = 0; j < vm.grid[i].length; j++) {
         var tile = new Image();
-        if( $scope.grid[i][j] == 0 ){
+        if( vm.grid[i][j] == 0 ){
           // set tile image
           tile.src = "images/map/empty0.png";
         } // end empty
-        else if( $scope.grid[i][j] == 1 ){
+        else if( vm.grid[i][j] == 1 ){
           // set tile image
           tile.src = "images/map/full0.png";
         } // end empty
@@ -73,10 +75,10 @@ myApp.controller( 'primeManController', [ '$scope', '$http', function( $scope, $
       j = 0;
     } // end for
     /// - draw pellets - ///
-    for (var k = 0; k < $scope.pellets.length; k++) {
-      for (var l = 0; l < $scope.pellets[k].length; l++) {
+    for (var k = 0; k < vm.pellets.length; k++) {
+      for (var l = 0; l < vm.pellets[k].length; l++) {
         var pellet = new Image();
-        if( $scope.pellets[k][l] == 0 ){
+        if( vm.pellets[k][l] == 0 ){
           // set pellet image
           pellet.src = "images/pellet.png";
           ctx.drawImage( pellet, k * player.size+10, l * player.size+10, player.size/2, player.size/2 );
@@ -86,7 +88,7 @@ myApp.controller( 'primeManController', [ '$scope', '$http', function( $scope, $
     } // end for
   }; //end drawBoard
 
-  $scope.drawPlayer = function(){
+  vm.drawPlayer = function(){
     var c = document.getElementById( "myCanvas" );
     var ctx = c.getContext( "2d" );
     // draw player
@@ -103,48 +105,48 @@ myApp.controller( 'primeManController', [ '$scope', '$http', function( $scope, $
     } // mouth closed
     player.position.x = parseInt( player.left / player.size );
     player.position.y = parseInt( player.top / player.size );
-    if( $scope.pellets[ player.position.x ][ player.position.y ] == 0 ){
-      $scope.pellets[ player.position.x ][ player.position.y ] = 1;
+    if( vm.pellets[ player.position.x ][ player.position.y ] == 0 ){
+      vm.pellets[ player.position.x ][ player.position.y ] = 1;
     }
   } // end drawImage
 
-  $scope.getGrid = function(){
+  vm.getGrid = function(){
     $http({
       method: 'GET',
       url: '/getGrid'
     }).then( function( response ){
       console.log( 'back with:', response );
-      $scope.grid = response.data;
-      angular.copy( $scope.grid, $scope.pellets );
-      $scope.startGame();
+      vm.grid = response.data;
+      angular.copy( vm.grid, vm.pellets );
+      vm.startGame();
     }); //end http
   }; // end getGrid
 
   $scope.key = function($event){
-    if ($event.keyCode == 38){
+    if( $event.keyCode == 38 ){
       player.nextDirection = UP;
     }
-    else if ($event.keyCode == 39){
+    else if( $event.keyCode == 39 ){
       player.nextDirection = RIGHT;
     }
-    else if ($event.keyCode == 40){
+    else if( $event.keyCode == 40 ){
       player.nextDirection = DOWN;
     }
-    else if ($event.keyCode == 37){
+    else if( $event.keyCode == 37 ){
       player.nextDirection = LEFT;
     }
   } // end get key stroke
 
-  $scope.init = function(){
-    $scope.menuMode = true;
+  vm.init = function(){
+    vm.menuMode = true;
   }; //end init function
 
-  $scope.quitGame = function(){
+  vm.quitGame = function(){
     if( verbose ) console.log( 'in quitGame');
-    $scope.menuMode = true;
+    vm.menuMode = true;
   };
 
-  $scope.resetPlayer = function(){
+  vm.resetPlayer = function(){
     player.left = 240;
     player.top = 240;
     player.direction = 1;
@@ -153,14 +155,14 @@ myApp.controller( 'primeManController', [ '$scope', '$http', function( $scope, $
     player.mouthAgape = false;
   }; // end funk
 
-  $scope.startGame = function(){
+  vm.startGame = function(){
     if( verbose ) console.log( 'in startGame');
-    $scope.resetPlayer();
-    $scope.menuMode = false;
-    $scope.coreLoop();
+    vm.resetPlayer();
+    vm.menuMode = false;
+    vm.coreLoop();
   }; // end funk
 
-  $scope.updatePlayerPosition = function(){
+  vm.updatePlayerPosition = function(){
     if( player.left % player.size == 0 && player.top % player.size == 0 && player.nextDirection != player.direction ){
       player.direction = player.nextDirection;
     } // end reverse vertical
@@ -175,27 +177,27 @@ myApp.controller( 'primeManController', [ '$scope', '$http', function( $scope, $
     } // move vert from horz
     // move player
     if( player.direction == UP && player.top > 0){
-      if( $scope.grid[ player.position.x ][ player.position.y ] == 0 ){
+      if( vm.grid[ player.position.x ][ player.position.y ] == 0 ){
         player.top -= player.speed;
       }
     } //end up
     else if( player.direction == RIGHT && player.left < canvas.size - player.size ){
-      if( $scope.grid[ player.position.x+1 ][ player.position.y ] == 0 ){
+      if( vm.grid[ player.position.x+1 ][ player.position.y ] == 0 ){
         player.left += player.speed;
       }
     } //end right
     else if( player.direction == DOWN && player.top < canvas.size - player.size ){
-      if( $scope.grid[ player.position.x ][ player.position.y+1 ] == 0 ){
+      if( vm.grid[ player.position.x ][ player.position.y+1 ] == 0 ){
         player.top += player.speed;
       }
     } //end down
     else if( player.direction == LEFT && player.left > 0 ){
-      if( $scope.grid[ player.position.x ][ player.position.y ] == 0 ){
+      if( vm.grid[ player.position.x ][ player.position.y ] == 0 ){
         player.left -= player.speed;
       }
     } //end left
   }; //end updatePlayerPosition
 
-  $scope.init();
+  vm.init();
 
 }]); // end primeManController

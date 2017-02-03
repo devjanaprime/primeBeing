@@ -1,4 +1,11 @@
+
 var myApp = angular.module( 'myApp', [] );
+
+// "CONST"
+var UP = 0;
+var RIGHT = 1;
+var DOWN = 2;
+var LEFT = 3;
 
 myApp.controller( 'primeManController', [ '$scope', '$http', function( $scope, $http ){
   var canvas = {
@@ -115,20 +122,16 @@ myApp.controller( 'primeManController', [ '$scope', '$http', function( $scope, $
 
   $scope.key = function($event){
     if ($event.keyCode == 38){
-        // up
-        player.nextDirection = 0;
+      player.nextDirection = UP;
     }
     else if ($event.keyCode == 39){
-      // right
-      player.nextDirection = 1;
+      player.nextDirection = RIGHT;
     }
     else if ($event.keyCode == 40){
-      // down
-      player.nextDirection = 2;
+      player.nextDirection = DOWN;
     }
     else if ($event.keyCode == 37){
-      // left
-      player.nextDirection = 3;
+      player.nextDirection = LEFT;
     }
   } // end get key stroke
 
@@ -161,32 +164,32 @@ myApp.controller( 'primeManController', [ '$scope', '$http', function( $scope, $
     if( player.left % player.size == 0 && player.top % player.size == 0 && player.nextDirection != player.direction ){
       player.direction = player.nextDirection;
     } // end reverse vertical
-    if( ( player.direction == 0 && player.nextDirection == 2 ) || ( player.direction == 2 && player.nextDirection == 0 ) || ( player.direction == 1 && player.nextDirection == 3 ) || ( player.direction == 3 && player.nextDirection == 1 ) ){
+    if( ( player.direction == UP && player.nextDirection == DOWN ) || ( player.direction == DOWN && player.nextDirection == UP ) || ( player.direction == RIGHT && player.nextDirection == LEFT ) || ( player.direction == LEFT && player.nextDirection == RIGHT ) ){
       player.direction = player.nextDirection;
     } // end reverse horizontal
-    else if( ( player.direction == 0 || player.direction == 2 ) && ( player.nextDirection == 1 || player.nextDirection == 3 ) && ( player.top % player.size == 0 ) ){
+    else if( ( player.direction == UP || player.direction == DOWN ) && ( player.nextDirection == RIGHT || player.nextDirection == LEFT ) && ( player.top % player.size == 0 ) ){
       player.direction = player.nextDirection;
     } // move horz from vert
-    else if( ( player.direction == 1 || player.direction == 3 ) && ( player.nextDirection == 0 || player.nextDirection == 2 ) && ( player.left % player.size == 0 ) ){
+    else if( ( player.direction == RIGHT || player.direction == LEFT ) && ( player.nextDirection == UP || player.nextDirection == DOWN ) && ( player.left % player.size == 0 ) ){
       player.direction = player.nextDirection;
     } // move vert from horz
     // move player
-    if( player.direction == 0 && player.top > 0){
+    if( player.direction == UP && player.top > 0){
       if( $scope.grid[ player.position.x ][ player.position.y ] == 0 ){
         player.top -= player.speed;
       }
     } //end up
-    else if( player.direction == 1 && player.left < canvas.size - player.size ){
+    else if( player.direction == RIGHT && player.left < canvas.size - player.size ){
       if( $scope.grid[ player.position.x+1 ][ player.position.y ] == 0 ){
         player.left += player.speed;
       }
     } //end right
-    else if( player.direction == 2 && player.top < canvas.size - player.size ){
+    else if( player.direction == DOWN && player.top < canvas.size - player.size ){
       if( $scope.grid[ player.position.x ][ player.position.y+1 ] == 0 ){
         player.top += player.speed;
       }
     } //end down
-    else if( player.left > 0 ){
+    else if( player.direction == LEFT && player.left > 0 ){
       if( $scope.grid[ player.position.x ][ player.position.y ] == 0 ){
         player.left -= player.speed;
       }

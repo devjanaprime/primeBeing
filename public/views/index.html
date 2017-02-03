@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Prime Man</title>
+    <script src="vendors/angular.min.js" charset="utf-8"></script>
+    <script src="scripts/primeMan.js" charset="utf-8"></script>
+  </head>
+  <body ng-app='myApp' ng-controller='primeManController' ng-keydown="key($event)">
+    <div id='menuDiv' ng-show='menuMode'>
+      <h1>Prime Being</h1>
+      <p>
+        Description and stuuuuuuuuuuffffffffff....
+      </p>
+      <button ng-click='startGame();'>Let me play it!</button>
+    </div>
+    <div id='playDiv' ng-hide='menuMode'>
+      <canvas id="myCanvas" width="560" height="560" style="border:1px solid #000000;">
+      </canvas>
+      <div>
+        <button ng-click='quitGame();'>Quit</button>
+      </div>
+    </div>
+  </body>
+</html>

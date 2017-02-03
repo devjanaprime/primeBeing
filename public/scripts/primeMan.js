@@ -2,26 +2,11 @@ var myApp = angular.module( 'myApp', [] );
 
 myApp.controller( 'primeManController', [ '$scope', '$http', function( $scope, $http ){
     var canvas = {
-      size: 560
+      size: 560 // px
     }; //end canvas
 
-    // the grid - replace later with info from db
-    var grid = [
-      [ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ],
-      [ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 ],
-      [ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1 ],
-      [ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1 ],
-      [ 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 1 ],
-      [ 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1 ],
-      [ 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1 ],
-      [ 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1 ],
-      [ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 ],
-      [ 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1 ],
-      [ 1, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1 ],
-      [ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 ],
-      [ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 ],
-      [ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ]
-    ];
+    // the grid
+    $scope.grid = [];
 
   // player
   var player = {
@@ -63,14 +48,14 @@ myApp.controller( 'primeManController', [ '$scope', '$http', function( $scope, $
     // clear canvas
     ctx.clearRect(0, 0, c.width, c.height);
     var left = 0;
-    for (var i = 0; i < grid.length; i++) {
-      for (var j = 0; j < grid[i].length; j++) {
+    for (var i = 0; i < $scope.grid.length; i++) {
+      for (var j = 0; j < $scope.grid[i].length; j++) {
         var tile = new Image();
-        if( grid[i][j] == 0 ){
+        if( $scope.grid[i][j] == 0 ){
           // set player image
           tile.src = "images/map/empty0.png";
         } // end empty
-        else if( grid[i][j] == 1 ){
+        else if( $scope.grid[i][j] == 1 ){
           // set player image
           tile.src = "images/map/full0.png";
         } // end empty
@@ -99,6 +84,17 @@ myApp.controller( 'primeManController', [ '$scope', '$http', function( $scope, $
     player.position.y = parseInt( player.top / player.size );
     if( verbose ) console.log( player.position );
   } // end drawImage
+
+  $scope.getGrid = function(){
+    $http({
+      method: 'GET',
+      url: '/getGrid'
+    }).then( function( response ){
+      console.log( 'back with:', response );
+      $scope.grid= response.data;
+      $scope.startGame();
+    }); //end http
+  }; // end getGrid
 
   $scope.key = function($event){
     if ($event.keyCode == 38){
@@ -159,22 +155,22 @@ myApp.controller( 'primeManController', [ '$scope', '$http', function( $scope, $
     } // move vert from horz
     // move player
     if( player.direction == 0 && player.top > 0){
-      if( grid[ player.position.x ][ player.position.y ] == 0 ){
+      if( $scope.grid[ player.position.x ][ player.position.y ] == 0 ){
         player.top -= player.speed;
       }
     } //end up
     else if( player.direction == 1 && player.left < canvas.size - player.size ){
-      if( grid[ player.position.x+1 ][ player.position.y ] == 0 ){
+      if( $scope.grid[ player.position.x+1 ][ player.position.y ] == 0 ){
         player.left += player.speed;
       }
     } //end right
     else if( player.direction == 2 && player.top < canvas.size - player.size ){
-      if( grid[ player.position.x ][ player.position.y+1 ] == 0 ){
+      if( $scope.grid[ player.position.x ][ player.position.y+1 ] == 0 ){
         player.top += player.speed;
       }
     } //end down
     else if( player.left > 0 ){
-      if( grid[ player.position.x ][ player.position.y ] == 0 ){
+      if( $scope.grid[ player.position.x ][ player.position.y ] == 0 ){
         player.left -= player.speed;
       }
     } //end left

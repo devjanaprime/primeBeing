@@ -1,12 +1,14 @@
 var myApp = angular.module( 'myApp', [] );
 
 myApp.controller( 'primeManController', [ '$scope', '$http', function( $scope, $http ){
-    var canvas = {
-      size: 560 // px
-    }; //end canvas
+  var canvas = {
+    size: 560 // px
+  }; //end canvas
 
-    // the grid
-    $scope.grid = [];
+  // the grid
+  $scope.grid = [];
+  // pellets
+  $scope.pellets = [];
 
   // player
   var player = {
@@ -52,16 +54,28 @@ myApp.controller( 'primeManController', [ '$scope', '$http', function( $scope, $
       for (var j = 0; j < $scope.grid[i].length; j++) {
         var tile = new Image();
         if( $scope.grid[i][j] == 0 ){
-          // set player image
+          // set tile image
           tile.src = "images/map/empty0.png";
         } // end empty
         else if( $scope.grid[i][j] == 1 ){
-          // set player image
+          // set tile image
           tile.src = "images/map/full0.png";
         } // end empty
         ctx.drawImage( tile, i * player.size, j * player.size, player.size, player.size );
       } // end for
       j = 0;
+    } // end for
+    /// - draw pellets - ///
+    for (var k = 0; k < $scope.pellets.length; k++) {
+      for (var l = 0; l < $scope.pellets[k].length; l++) {
+        var pellet = new Image();
+        if( $scope.pellets[k][l] == 0 ){
+          // set pellet image
+          pellet.src = "images/pellet.png";
+          ctx.drawImage( pellet, k * player.size+10, l * player.size+10, player.size/2, player.size/2 );
+        } // empty cell with pellet
+      } // end for
+      l = 0;
     } // end for
   }; //end drawBoard
 
@@ -82,7 +96,9 @@ myApp.controller( 'primeManController', [ '$scope', '$http', function( $scope, $
     } // mouth closed
     player.position.x = parseInt( player.left / player.size );
     player.position.y = parseInt( player.top / player.size );
-    if( verbose ) console.log( player.position );
+    if( $scope.pellets[ player.position.x ][ player.position.y ] == 0 ){
+      $scope.pellets[ player.position.x ][ player.position.y ] = 1;
+    }
   } // end drawImage
 
   $scope.getGrid = function(){
@@ -91,7 +107,8 @@ myApp.controller( 'primeManController', [ '$scope', '$http', function( $scope, $
       url: '/getGrid'
     }).then( function( response ){
       console.log( 'back with:', response );
-      $scope.grid= response.data;
+      $scope.grid = response.data;
+      angular.copy( $scope.grid, $scope.pellets );
       $scope.startGame();
     }); //end http
   }; // end getGrid
